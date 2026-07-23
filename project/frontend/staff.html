@@ -72,6 +72,12 @@
         <!-- 3. Staff -->
         <div class="tab-pane active" id="tab-staff">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-staff" placeholder="Search staff by ID, Name, Role, Contact...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -94,6 +100,12 @@
         <!-- 14. Security_Group -->
         <div class="tab-pane" id="tab-security">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-security" placeholder="Search security groups by ID, Shift...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -113,6 +125,12 @@
         <!-- 9. Workshop -->
         <div class="tab-pane" id="tab-workshop">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-workshop" placeholder="Search workshops by ID, Topic...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -134,6 +152,12 @@
         <!-- 18. Attends -->
         <div class="tab-pane" id="tab-attends">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-attends" placeholder="Search attendance by Staff_ID, Workshop_ID...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -155,14 +179,15 @@
 
   </div>
 
-  <!-- Staff Add Modal -->
+  <!-- Staff Add/Edit Modal -->
   <div class="modal-backdrop" id="staff-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Add Staff Member</h3>
+        <h3 class="modal-title" id="staff-modal-title">Add Staff Member</h3>
         <button class="modal-close" id="staff-modal-close">&times;</button>
       </div>
       <form id="staff-form">
+        <input type="hidden" id="st-id">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="st-name">Name</label>

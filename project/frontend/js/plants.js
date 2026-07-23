@@ -1,5 +1,5 @@
 /* ==========================================================================
-   js/plants.js — Cultivation Tables Manager with Add & Delete across all tables
+   js/plants.js — Cultivation Tables Manager with Search, Edit & Delete
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderIrrigationTypeTable();
   await renderDeadPlantTable();
   initPlantModal();
+  initSearchListeners();
 });
 
 function initTabs() {
@@ -25,15 +26,34 @@ function initTabs() {
   });
 }
 
+function initSearchListeners() {
+  document.getElementById('search-plant')?.addEventListener('input', renderPlantTable);
+  document.getElementById('search-section')?.addEventListener('input', renderSectionTable);
+  document.getElementById('search-irrigation-sys')?.addEventListener('input', renderIrrigationSysTable);
+  document.getElementById('search-irrigation-type')?.addEventListener('input', renderIrrigationTypeTable);
+  document.getElementById('search-dead-plant')?.addEventListener('input', renderDeadPlantTable);
+}
+
 // 1. Plant
 async function renderPlantTable() {
   const tbody = document.getElementById('tbl-plant-tbody');
   if (!tbody) return;
 
-  const plants = window.ApiClient ? await window.ApiClient.getPlants() : window.GardenData.getTable('PLANT');
+  let plants = window.ApiClient ? await window.ApiClient.getPlants() : window.GardenData.getTable('PLANT');
+  const query = (document.getElementById('search-plant')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    plants = plants.filter(p => 
+      (p.Plant_ID || p.plant_id || '').toLowerCase().includes(query) ||
+      (p.Name || p.name || '').toLowerCase().includes(query) ||
+      (p.Section_ID || p.section_id || '').toLowerCase().includes(query) ||
+      (p.Staff_ID || p.staff_id || '').toLowerCase().includes(query) ||
+      (p.System_ID || p.system_id || '').toLowerCase().includes(query)
+    );
+  }
 
   if (plants.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No plants found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No matching plants found.</td></tr>`;
     return;
   }
 
@@ -54,14 +74,37 @@ async function renderPlantTable() {
         <td><strong>${escapeHtml(name)}</strong></td>
         <td>${escapeHtml(formatDate(datePlanted))}</td>
         <td>
-          <button class="btn btn-danger btn-sm btn-icon" title="Delete Plant" onclick="deletePlantRow('${id}')">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
+          <div class="action-btns">
+            <button class="btn btn-edit btn-sm btn-icon" title="Edit Plant" onclick="editPlantRow('${id}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btn-icon" title="Delete Plant" onclick="deletePlantRow('${id}')">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+window.editPlantRow = async function(id) {
+  const plants = window.ApiClient ? await window.ApiClient.getPlants() : window.GardenData.getTable('PLANT');
+  const plant = plants.find(p => String(p.Plant_ID || p.plant_id || '').toLowerCase() === String(id).toLowerCase());
+  if (!plant) return;
+
+  const modal = document.getElementById('plant-modal');
+  document.getElementById('plant-modal-title').textContent = 'Edit Plant Record';
+  document.getElementById('plant-modal-submit').textContent = 'Update Plant';
+  document.getElementById('form-p-id').value = id;
+  document.getElementById('form-p-name').value = plant.Name || plant.name || '';
+  document.getElementById('form-p-sec').value = plant.Section_ID || plant.section_id || 'SEC01';
+  document.getElementById('form-p-staff').value = plant.Staff_ID || plant.staff_id || 'ST001';
+  document.getElementById('form-p-sys').value = plant.System_ID || plant.system_id || 'IS01';
+  document.getElementById('form-p-date').value = (plant.Date_Planted || plant.date_planted || '').split('T')[0];
+
+  modal.classList.add('active');
+};
 
 window.deletePlantRow = async function(id) {
   if (confirm(`Delete plant "${id}"?`)) {
@@ -77,10 +120,19 @@ async function renderSectionTable() {
   const tbody = document.getElementById('tbl-section-tbody');
   if (!tbody) return;
 
-  const sections = window.ApiClient ? await window.ApiClient.getSections() : window.GardenData.getTable('GARDEN_SECTION');
+  let sections = window.ApiClient ? await window.ApiClient.getSections() : window.GardenData.getTable('GARDEN_SECTION');
+  const query = (document.getElementById('search-section')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    sections = sections.filter(s =>
+      (s.Section_ID || s.section_id || '').toLowerCase().includes(query) ||
+      (s.Name || s.name || '').toLowerCase().includes(query) ||
+      (s.Security_ID || s.security_id || '').toLowerCase().includes(query)
+    );
+  }
 
   if (sections.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">No sections found.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 24px; color: var(--text-muted);">No matching sections found.</td></tr>`;
     return;
   }
 
@@ -99,9 +151,11 @@ async function renderSectionTable() {
         <td>${escapeHtml(area)} sq ft</td>
         <td><span class="badge ${signboard === 'Yes' ? 'badge-healthy' : 'badge-pending'}">${escapeHtml(signboard)}</span></td>
         <td>
-          <button class="btn btn-danger btn-sm btn-icon" title="Delete Section" onclick="deleteSectionRow('${secId}')">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
+          <div class="action-btns">
+            <button class="btn btn-danger btn-sm btn-icon" title="Delete Section" onclick="deleteSectionRow('${secId}')">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
         </td>
       </tr>
     `;
@@ -122,7 +176,15 @@ async function renderIrrigationSysTable() {
   const tbody = document.getElementById('tbl-irrigation-sys-tbody');
   if (!tbody) return;
 
-  const systems = window.ApiClient ? await window.ApiClient.getIrrigationSystems() : window.GardenData.getTable('IRRIGATION_SYSTEM');
+  let systems = window.ApiClient ? await window.ApiClient.getIrrigationSystems() : window.GardenData.getTable('IRRIGATION_SYSTEM');
+  const query = (document.getElementById('search-irrigation-sys')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    systems = systems.filter(is =>
+      (is.System_ID || is.system_id || '').toLowerCase().includes(query) ||
+      (is.Type_name || is.type_name || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = systems.map(is => {
     const sysId = is.System_ID || is.system_id || 'IS01';
@@ -155,7 +217,15 @@ async function renderIrrigationTypeTable() {
   const tbody = document.getElementById('tbl-irrigation-type-tbody');
   if (!tbody) return;
 
-  const types = window.ApiClient ? await window.ApiClient.getIrrigationTypes() : window.GardenData.getTable('IRRIGATION_TYPE');
+  let types = window.ApiClient ? await window.ApiClient.getIrrigationTypes() : window.GardenData.getTable('IRRIGATION_TYPE');
+  const query = (document.getElementById('search-irrigation-type')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    types = types.filter(it =>
+      (it.Type_name || it.type_name || '').toLowerCase().includes(query) ||
+      (it.water_usage || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = types.map(it => {
     const typeName = it.Type_name || it.type_name || 'Drip';
@@ -189,7 +259,16 @@ async function renderDeadPlantTable() {
   const tbody = document.getElementById('tbl-dead-plant-tbody');
   if (!tbody) return;
 
-  const dead = window.ApiClient ? await window.ApiClient.getDeadPlants() : window.GardenData.getTable('DEAD_PLANT_RECORD');
+  let dead = window.ApiClient ? await window.ApiClient.getDeadPlants() : window.GardenData.getTable('DEAD_PLANT_RECORD');
+  const query = (document.getElementById('search-dead-plant')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    dead = dead.filter(d =>
+      (d.Record_ID || d.record_id || '').toLowerCase().includes(query) ||
+      (d.Plant_ID || d.plant_id || '').toLowerCase().includes(query) ||
+      (d.Reason || d.reason || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = dead.map(d => {
     const recId = d.Record_ID || d.record_id || 'DR01';
@@ -227,9 +306,19 @@ function initPlantModal() {
 
   if (!modal || !addBtn) return;
 
-  function closeModal() { modal.classList.remove('active'); form.reset(); }
+  function closeModal() {
+    modal.classList.remove('active');
+    form.reset();
+    document.getElementById('form-p-id').value = '';
+    document.getElementById('plant-modal-title').textContent = 'Add New Plant';
+    document.getElementById('plant-modal-submit').textContent = 'Save Plant';
+  }
 
   addBtn.addEventListener('click', () => {
+    form.reset();
+    document.getElementById('form-p-id').value = '';
+    document.getElementById('plant-modal-title').textContent = 'Add New Plant';
+    document.getElementById('plant-modal-submit').textContent = 'Save Plant';
     document.getElementById('form-p-date').value = new Date().toISOString().split('T')[0];
     modal.classList.add('active');
   });
@@ -239,8 +328,8 @@ function initPlantModal() {
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const newPlant = {
-      Plant_ID: 'P' + String(Date.now()).slice(-3),
+    const editId = document.getElementById('form-p-id').value.trim();
+    const plantData = {
       Section_ID: document.getElementById('form-p-sec').value.trim(),
       Staff_ID: document.getElementById('form-p-staff').value.trim(),
       System_ID: document.getElementById('form-p-sys').value.trim(),
@@ -249,8 +338,17 @@ function initPlantModal() {
       status: 'Healthy'
     };
 
-    window.GardenData.addRow('PLANT', newPlant);
-    window.showToast(`Plant "${newPlant.Name}" added!`, 'success');
+    if (editId) {
+      plantData.Plant_ID = editId;
+      if (window.ApiClient) await window.ApiClient.updatePlant(editId, plantData);
+      else window.GardenData.updateRow('PLANT', 'Plant_ID', editId, plantData);
+      window.showToast(`Plant "${plantData.Name}" updated!`, 'success');
+    } else {
+      plantData.Plant_ID = 'P' + String(Date.now()).slice(-3);
+      window.GardenData.addRow('PLANT', plantData);
+      window.showToast(`Plant "${plantData.Name}" added!`, 'success');
+    }
+
     closeModal();
     await renderPlantTable();
   });

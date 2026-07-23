@@ -1,5 +1,5 @@
 /* ==========================================================================
-   js/visitors.js — Visitors & Access Exact Table Manager with Add/Delete
+   js/visitors.js — Visitors & Access Manager with Search & Delete
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderVisitorTable();
   await renderVisitorCardTable();
   await renderVisitorAccessTable();
+  initSearchListeners();
 });
 
 function initTabs() {
@@ -22,15 +23,32 @@ function initTabs() {
   });
 }
 
+function initSearchListeners() {
+  document.getElementById('search-visitor')?.addEventListener('input', renderVisitorTable);
+  document.getElementById('search-visitor-card')?.addEventListener('input', renderVisitorCardTable);
+  document.getElementById('search-visitor-access')?.addEventListener('input', renderVisitorAccessTable);
+}
+
 // 12. Visitor
 async function renderVisitorTable() {
   const tbody = document.getElementById('tbl-visitor-tbody');
   if (!tbody) return;
 
-  const visitors = window.ApiClient ? await window.ApiClient.getVisitors() : window.GardenData.getTable('VISITOR');
+  let visitors = window.ApiClient ? await window.ApiClient.getVisitors() : window.GardenData.getTable('VISITOR');
+  const query = (document.getElementById('search-visitor')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    visitors = visitors.filter(v =>
+      (v.Visitor_ID || v.visitor_id || '').toLowerCase().includes(query) ||
+      (v.Card_ID || v.card_id || '').toLowerCase().includes(query) ||
+      (v.Name || v.name || '').toLowerCase().includes(query) ||
+      (v.Contact || v.contact || '').toLowerCase().includes(query) ||
+      (v.profession || '').toLowerCase().includes(query)
+    );
+  }
 
   if (visitors.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No visitors logged.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No matching visitors logged.</td></tr>`;
     return;
   }
 
@@ -74,7 +92,16 @@ async function renderVisitorCardTable() {
   const tbody = document.getElementById('tbl-visitor-card-tbody');
   if (!tbody) return;
 
-  const cards = window.ApiClient ? await window.ApiClient.getVisitorCards() : window.GardenData.getTable('VISITOR_CARD');
+  let cards = window.ApiClient ? await window.ApiClient.getVisitorCards() : window.GardenData.getTable('VISITOR_CARD');
+  const query = (document.getElementById('search-visitor-card')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    cards = cards.filter(c =>
+      (c.Card_ID || c.card_id || '').toLowerCase().includes(query) ||
+      (c.type || '').toLowerCase().includes(query) ||
+      (c.Security_ID || c.security_id || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = cards.map(c => {
     const id = c.Card_ID || c.card_id || 'CARD101';
@@ -118,7 +145,16 @@ async function renderVisitorAccessTable() {
   const tbody = document.getElementById('tbl-visitor-access-tbody');
   if (!tbody) return;
 
-  const access = window.ApiClient ? await window.ApiClient.getVisitorAccess() : window.GardenData.getTable('VISITOR_ACCESS');
+  let access = window.ApiClient ? await window.ApiClient.getVisitorAccess() : window.GardenData.getTable('VISITOR_ACCESS');
+  const query = (document.getElementById('search-visitor-access')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    access = access.filter(a =>
+      (a.Visitor_ID || a.visitor_id || '').toLowerCase().includes(query) ||
+      (a.Section_ID || a.section_id || '').toLowerCase().includes(query) ||
+      (a.purpose || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = access.map(a => {
     const vId = a.Visitor_ID || a.visitor_id || 'VIS01';

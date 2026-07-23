@@ -1,5 +1,5 @@
 /* ==========================================================================
-   js/equipment.js — Equipment & Inventory Exact Table Manager with Add/Delete
+   js/equipment.js — Equipment & Inventory Manager with Search, Edit & Delete
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderUsesTable();
   await renderEquipMaintainTable();
   initEquipmentModal();
+  initSearchListeners();
 });
 
 function initTabs() {
@@ -25,19 +26,42 @@ function initTabs() {
   });
 }
 
+function initSearchListeners() {
+  document.getElementById('search-equipment')?.addEventListener('input', renderEquipmentTable);
+  document.getElementById('search-fertilizer')?.addEventListener('input', renderFertilizerTable);
+  document.getElementById('search-vendor')?.addEventListener('input', renderVendorTable);
+  document.getElementById('search-uses')?.addEventListener('input', renderUsesTable);
+  document.getElementById('search-equip-maintain')?.addEventListener('input', renderEquipMaintainTable);
+}
+
 // 4. Equipment
 async function renderEquipmentTable() {
   const tbody = document.getElementById('tbl-equipment-tbody');
   if (!tbody) return;
 
-  const eq = window.ApiClient ? await window.ApiClient.getEquipment() : window.GardenData.getTable('EQUIPMENT');
+  let eq = window.ApiClient ? await window.ApiClient.getEquipment() : window.GardenData.getTable('EQUIPMENT');
+  const query = (document.getElementById('search-equipment')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    eq = eq.filter(item =>
+      (item.Equipment_ID || item.equipment_id || '').toLowerCase().includes(query) ||
+      (item.Name || item.name || '').toLowerCase().includes(query) ||
+      (item.Vendor_ID || item.vendor_id || '').toLowerCase().includes(query) ||
+      (item.material || '').toLowerCase().includes(query)
+    );
+  }
+
+  if (eq.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 24px; color: var(--text-muted);">No matching equipment found.</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = eq.map(item => {
     const id = item.Equipment_ID || item.equipment_id || item.tool_id || 'EQ01';
     const vendorId = item.Vendor_ID || item.vendor_id || 'V001';
     const name = item.Name || item.name || 'Garden Tool';
     const material = item.material || 'Steel';
-    const warranty = item.warranty || item.warranty_months ? item.warranty_months + ' months' : '12 months';
+    const warranty = item.warranty || (item.warranty_months ? item.warranty_months + ' months' : '12 months');
     const cost = item.cost || item.Cost || 0;
 
     return `
@@ -49,14 +73,36 @@ async function renderEquipmentTable() {
         <td>${escapeHtml(warranty)}</td>
         <td>₹${escapeHtml(cost)}</td>
         <td>
-          <button class="btn btn-danger btn-sm btn-icon" title="Delete Equipment" onclick="deleteEquipmentRow('${id}')">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
+          <div class="action-btns">
+            <button class="btn btn-edit btn-sm btn-icon" title="Edit Equipment" onclick="editEquipmentRow('${id}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btn-icon" title="Delete Equipment" onclick="deleteEquipmentRow('${id}')">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+window.editEquipmentRow = async function(id) {
+  const eqList = window.ApiClient ? await window.ApiClient.getEquipment() : window.GardenData.getTable('EQUIPMENT');
+  const eq = eqList.find(e => String(e.Equipment_ID || e.equipment_id || '').toLowerCase() === String(id).toLowerCase());
+  if (!eq) return;
+
+  const modal = document.getElementById('equipment-modal');
+  document.getElementById('equipment-modal-title').textContent = 'Edit Equipment Details';
+  document.getElementById('eq-id').value = id;
+  document.getElementById('eq-name').value = eq.Name || eq.name || '';
+  document.getElementById('eq-vendor').value = eq.Vendor_ID || eq.vendor_id || 'V001';
+  document.getElementById('eq-material').value = eq.material || 'Steel';
+  document.getElementById('eq-warranty').value = eq.warranty || '12 months';
+  document.getElementById('eq-cost').value = eq.cost || eq.Cost || 0;
+
+  modal.classList.add('active');
+};
 
 window.deleteEquipmentRow = async function(id) {
   if (confirm(`Delete Equipment "${id}"?`)) {
@@ -72,7 +118,16 @@ async function renderFertilizerTable() {
   const tbody = document.getElementById('tbl-fertilizer-tbody');
   if (!tbody) return;
 
-  const fert = window.ApiClient ? await window.ApiClient.getFertilizers() : window.GardenData.getTable('FERTILIZER');
+  let fert = window.ApiClient ? await window.ApiClient.getFertilizers() : window.GardenData.getTable('FERTILIZER');
+  const query = (document.getElementById('search-fertilizer')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    fert = fert.filter(f =>
+      (f.Fertilizer_ID || f.fertilizer_id || '').toLowerCase().includes(query) ||
+      (f.Name || f.name || '').toLowerCase().includes(query) ||
+      (f.nutrient_type || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = fert.map(f => {
     const id = f.Fertilizer_ID || f.fertilizer_id || 'F001';
@@ -114,7 +169,16 @@ async function renderVendorTable() {
   const tbody = document.getElementById('tbl-vendor-tbody');
   if (!tbody) return;
 
-  const vendors = window.ApiClient ? await window.ApiClient.getVendors() : window.GardenData.getTable('VENDOR');
+  let vendors = window.ApiClient ? await window.ApiClient.getVendors() : window.GardenData.getTable('VENDOR');
+  const query = (document.getElementById('search-vendor')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    vendors = vendors.filter(v =>
+      (v.Vendor_ID || v.vendor_id || '').toLowerCase().includes(query) ||
+      (v.Name || v.name || '').toLowerCase().includes(query) ||
+      (v.city || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = vendors.map(v => {
     const id = v.Vendor_ID || v.vendor_id || 'V001';
@@ -154,7 +218,15 @@ async function renderUsesTable() {
   const tbody = document.getElementById('tbl-uses-tbody');
   if (!tbody) return;
 
-  const uses = window.ApiClient ? await window.ApiClient.getUses() : window.GardenData.getTable('USES');
+  let uses = window.ApiClient ? await window.ApiClient.getUses() : window.GardenData.getTable('USES');
+  const query = (document.getElementById('search-uses')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    uses = uses.filter(u =>
+      (u.Staff_ID || u.staff_id || '').toLowerCase().includes(query) ||
+      (u.Equipment_ID || u.equipment_id || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = uses.map(u => {
     const staffId = u.Staff_ID || u.staff_id || u.worker_id || 'ST001';
@@ -190,7 +262,15 @@ async function renderEquipMaintainTable() {
   const tbody = document.getElementById('tbl-equip-maintain-tbody');
   if (!tbody) return;
 
-  const maintain = window.ApiClient ? await window.ApiClient.getEquipMaintain() : window.GardenData.getTable('EQUIP_MAINTAIN_BY');
+  let maintain = window.ApiClient ? await window.ApiClient.getEquipMaintain() : window.GardenData.getTable('EQUIP_MAINTAIN_BY');
+  const query = (document.getElementById('search-equip-maintain')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    maintain = maintain.filter(m =>
+      (m.Schedule_ID || m.schedule_id || '').toLowerCase().includes(query) ||
+      (m.Equipment_ID || m.equipment_id || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = maintain.map(m => {
     const schId = m.Schedule_ID || m.schedule_id || 'SCH01';
@@ -232,16 +312,27 @@ function initEquipmentModal() {
 
   if (!modal || !addBtn) return;
 
-  function closeModal() { modal.classList.remove('active'); form.reset(); }
+  function closeModal() {
+    modal.classList.remove('active');
+    form.reset();
+    document.getElementById('eq-id').value = '';
+    document.getElementById('equipment-modal-title').textContent = 'Add Equipment';
+  }
 
-  addBtn.addEventListener('click', () => modal.classList.add('active'));
+  addBtn.addEventListener('click', () => {
+    form.reset();
+    document.getElementById('eq-id').value = '';
+    document.getElementById('equipment-modal-title').textContent = 'Add Equipment';
+    modal.classList.add('active');
+  });
+
   closeBtn.addEventListener('click', closeModal);
   cancelBtn.addEventListener('click', closeModal);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const newEq = {
-      Equipment_ID: 'EQ' + String(Date.now()).slice(-3),
+    const editId = document.getElementById('eq-id').value.trim();
+    const eqData = {
       Vendor_ID: document.getElementById('eq-vendor').value.trim(),
       Name: document.getElementById('eq-name').value.trim(),
       material: document.getElementById('eq-material').value.trim(),
@@ -249,8 +340,17 @@ function initEquipmentModal() {
       cost: Number(document.getElementById('eq-cost').value)
     };
 
-    window.GardenData.addRow('EQUIPMENT', newEq);
-    window.showToast(`Equipment "${newEq.Name}" added!`, 'success');
+    if (editId) {
+      eqData.Equipment_ID = editId;
+      if (window.ApiClient) await window.ApiClient.updateEquipment(editId, eqData);
+      else window.GardenData.updateRow('EQUIPMENT', 'Equipment_ID', editId, eqData);
+      window.showToast(`Equipment "${eqData.Name}" updated!`, 'success');
+    } else {
+      eqData.Equipment_ID = 'EQ' + String(Date.now()).slice(-3);
+      window.GardenData.addRow('EQUIPMENT', eqData);
+      window.showToast(`Equipment "${eqData.Name}" added!`, 'success');
+    }
+
     closeModal();
     await renderEquipmentTable();
   });

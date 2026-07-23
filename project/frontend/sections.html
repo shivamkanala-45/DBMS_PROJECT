@@ -68,6 +68,13 @@
       <!-- Content Body -->
       <main class="content-body">
         
+        <div class="section-search-wrapper">
+          <div class="search-box">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-sections-grid" placeholder="Search garden sections by name, area, supervisor...">
+          </div>
+        </div>
+
         <!-- Cards Grid -->
         <div class="cards-grid" id="sections-grid">
           <!-- Populated dynamically by JS -->
@@ -79,14 +86,15 @@
 
   </div>
 
-  <!-- Add Section Modal -->
+  <!-- Add/Edit Section Modal -->
   <div class="modal-backdrop" id="section-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Add New Garden Section</h3>
+        <h3 class="modal-title" id="section-modal-title">Add New Garden Section</h3>
         <button class="modal-close" id="section-modal-close">&times;</button>
       </div>
       <form id="section-form">
+        <input type="hidden" id="sec-id">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="sec-name">Section Name</label>

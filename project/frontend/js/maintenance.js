@@ -1,5 +1,5 @@
 /* ==========================================================================
-   js/maintenance.js — Operations Exact Table Manager with Add/Delete
+   js/maintenance.js — Operations Manager with Search, Edit & Delete
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   await renderAppliesFertilizerTable();
   await renderAppliesPestTable();
   initTaskModal();
+  initSearchListeners();
 });
 
 function initTabs() {
@@ -26,12 +27,35 @@ function initTabs() {
   });
 }
 
+function initSearchListeners() {
+  document.getElementById('search-maintenance')?.addEventListener('input', renderMaintenanceTable);
+  document.getElementById('search-pest-control')?.addEventListener('input', renderPestControlTable);
+  document.getElementById('search-compost-bin')?.addEventListener('input', renderCompostBinTable);
+  document.getElementById('search-climate-log')?.addEventListener('input', renderClimateLogTable);
+  document.getElementById('search-applies-fert')?.addEventListener('input', renderAppliesFertilizerTable);
+  document.getElementById('search-applies-pest')?.addEventListener('input', renderAppliesPestTable);
+}
+
 // 11. Maintenance_Schedule
 async function renderMaintenanceTable() {
   const tbody = document.getElementById('tbl-maintenance-tbody');
   if (!tbody) return;
 
-  const tasks = window.ApiClient ? await window.ApiClient.getMaintenance() : window.GardenData.getTable('MAINTENANCE_SCHEDULE');
+  let tasks = window.ApiClient ? await window.ApiClient.getMaintenance() : window.GardenData.getTable('MAINTENANCE_SCHEDULE');
+  const query = (document.getElementById('search-maintenance')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    tasks = tasks.filter(t =>
+      (t.Schedule_ID || t.schedule_id || '').toLowerCase().includes(query) ||
+      (t.task || t.title || '').toLowerCase().includes(query) ||
+      (t.status || '').toLowerCase().includes(query)
+    );
+  }
+
+  if (tasks.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 24px; color: var(--text-muted);">No matching maintenance tasks found.</td></tr>`;
+    return;
+  }
 
   tbody.innerHTML = tasks.map(t => {
     const id = t.Schedule_ID || t.schedule_id || t.task_id || 'SCH01';
@@ -44,14 +68,33 @@ async function renderMaintenanceTable() {
         <td><span class="badge ${status === 'Completed' ? 'badge-completed' : 'badge-warning'}">${escapeHtml(status)}</span></td>
         <td><strong>${escapeHtml(task)}</strong></td>
         <td>
-          <button class="btn btn-danger btn-sm btn-icon" title="Delete Task" onclick="deleteMaintenanceRow('${id}')">
-            <i class="fa-solid fa-trash-can"></i>
-          </button>
+          <div class="action-btns">
+            <button class="btn btn-edit btn-sm btn-icon" title="Edit Task" onclick="editMaintenanceRow('${id}')">
+              <i class="fa-solid fa-pen-to-square"></i>
+            </button>
+            <button class="btn btn-danger btn-sm btn-icon" title="Delete Task" onclick="deleteMaintenanceRow('${id}')">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
         </td>
       </tr>
     `;
   }).join('');
 }
+
+window.editMaintenanceRow = async function(id) {
+  const tasks = window.ApiClient ? await window.ApiClient.getMaintenance() : window.GardenData.getTable('MAINTENANCE_SCHEDULE');
+  const t = tasks.find(item => String(item.Schedule_ID || item.schedule_id || '').toLowerCase() === String(id).toLowerCase());
+  if (!t) return;
+
+  const modal = document.getElementById('task-modal');
+  document.getElementById('task-modal-title').textContent = 'Edit Schedule Task';
+  document.getElementById('t-id').value = id;
+  document.getElementById('t-task').value = t.task || t.title || '';
+  document.getElementById('t-status').value = t.status || 'Pending';
+
+  modal.classList.add('active');
+};
 
 window.deleteMaintenanceRow = async function(id) {
   if (confirm(`Delete Maintenance Task "${id}"?`)) {
@@ -67,7 +110,16 @@ async function renderPestControlTable() {
   const tbody = document.getElementById('tbl-pest-control-tbody');
   if (!tbody) return;
 
-  const pc = window.ApiClient ? await window.ApiClient.getPestControl() : window.GardenData.getTable('PEST_CONTROL');
+  let pc = window.ApiClient ? await window.ApiClient.getPestControl() : window.GardenData.getTable('PEST_CONTROL');
+  const query = (document.getElementById('search-pest-control')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    pc = pc.filter(item =>
+      (item.Control_ID || item.control_id || '').toLowerCase().includes(query) ||
+      (item.Vendor_ID || item.vendor_id || '').toLowerCase().includes(query) ||
+      (item.target || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = pc.map(item => {
     const id = item.Control_ID || item.control_id || 'PC01';
@@ -103,7 +155,16 @@ async function renderCompostBinTable() {
   const tbody = document.getElementById('tbl-compost-bin-tbody');
   if (!tbody) return;
 
-  const bins = window.ApiClient ? await window.ApiClient.getCompost() : window.GardenData.getTable('COMPOST_BIN');
+  let bins = window.ApiClient ? await window.ApiClient.getCompost() : window.GardenData.getTable('COMPOST_BIN');
+  const query = (document.getElementById('search-compost-bin')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    bins = bins.filter(b =>
+      (b.Bin_ID || b.bin_id || '').toLowerCase().includes(query) ||
+      (b.Section_ID || b.section_id || '').toLowerCase().includes(query) ||
+      (b.type || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = bins.map(b => {
     const binId = b.Bin_ID || b.bin_id || 'BIN01';
@@ -141,7 +202,16 @@ async function renderClimateLogTable() {
   const tbody = document.getElementById('tbl-climate-log-tbody');
   if (!tbody) return;
 
-  const logs = window.ApiClient ? await window.ApiClient.getClimate() : window.GardenData.getTable('CLIMATE_LOG');
+  let logs = window.ApiClient ? await window.ApiClient.getClimate() : window.GardenData.getTable('CLIMATE_LOG');
+  const query = (document.getElementById('search-climate-log')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    logs = logs.filter(c =>
+      (c.date || c.log_date || '').toLowerCase().includes(query) ||
+      (c.temperature || c.temp || '').toLowerCase().includes(query) ||
+      (c.rainfall || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = logs.map(c => {
     const date = c.date || c.log_date || '2026-07-24';
@@ -181,7 +251,16 @@ async function renderAppliesFertilizerTable() {
   const tbody = document.getElementById('tbl-applies-fert-tbody');
   if (!tbody) return;
 
-  const list = window.ApiClient ? await window.ApiClient.getAppliesFertilizer() : window.GardenData.getTable('APPLIES_FERTILIZER');
+  let list = window.ApiClient ? await window.ApiClient.getAppliesFertilizer() : window.GardenData.getTable('APPLIES_FERTILIZER');
+  const query = (document.getElementById('search-applies-fert')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    list = list.filter(af =>
+      (af.Plant_ID || af.plant_id || '').toLowerCase().includes(query) ||
+      (af.Staff_ID || af.staff_id || '').toLowerCase().includes(query) ||
+      (af.Fertilizer_ID || af.fertilizer_id || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = list.map(af => {
     const pId = af.Plant_ID || af.plant_id || 'P001';
@@ -221,7 +300,16 @@ async function renderAppliesPestTable() {
   const tbody = document.getElementById('tbl-applies-pest-tbody');
   if (!tbody) return;
 
-  const list = window.ApiClient ? await window.ApiClient.getAppliesPest() : window.GardenData.getTable('APPLIES_PEST');
+  let list = window.ApiClient ? await window.ApiClient.getAppliesPest() : window.GardenData.getTable('APPLIES_PEST');
+  const query = (document.getElementById('search-applies-pest')?.value || '').toLowerCase().trim();
+
+  if (query) {
+    list = list.filter(ap =>
+      (ap.Plant_ID || ap.plant_id || '').toLowerCase().includes(query) ||
+      (ap.Staff_ID || ap.staff_id || '').toLowerCase().includes(query) ||
+      (ap.pest_ID || ap.pest_id || '').toLowerCase().includes(query)
+    );
+  }
 
   tbody.innerHTML = list.map(ap => {
     const pId = ap.Plant_ID || ap.plant_id || 'P001';
@@ -265,22 +353,42 @@ function initTaskModal() {
 
   if (!modal || !addBtn) return;
 
-  function closeModal() { modal.classList.remove('active'); form.reset(); }
+  function closeModal() {
+    modal.classList.remove('active');
+    form.reset();
+    document.getElementById('t-id').value = '';
+    document.getElementById('task-modal-title').textContent = 'Schedule Task';
+  }
 
-  addBtn.addEventListener('click', () => modal.classList.add('active'));
+  addBtn.addEventListener('click', () => {
+    form.reset();
+    document.getElementById('t-id').value = '';
+    document.getElementById('task-modal-title').textContent = 'Schedule Task';
+    modal.classList.add('active');
+  });
+
   closeBtn.addEventListener('click', closeModal);
   cancelBtn.addEventListener('click', closeModal);
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    const newTask = {
-      Schedule_ID: 'SCH' + String(Date.now()).slice(-3),
+    const editId = document.getElementById('t-id').value.trim();
+    const taskData = {
       status: document.getElementById('t-status').value,
       task: document.getElementById('t-task').value.trim()
     };
 
-    window.GardenData.addRow('MAINTENANCE_SCHEDULE', newTask);
-    window.showToast(`Task scheduled!`, 'success');
+    if (editId) {
+      taskData.Schedule_ID = editId;
+      if (window.ApiClient) await window.ApiClient.updateMaintenance(editId, taskData);
+      else window.GardenData.updateRow('MAINTENANCE_SCHEDULE', 'Schedule_ID', editId, taskData);
+      window.showToast(`Task updated!`, 'success');
+    } else {
+      taskData.Schedule_ID = 'SCH' + String(Date.now()).slice(-3);
+      window.GardenData.addRow('MAINTENANCE_SCHEDULE', taskData);
+      window.showToast(`Task scheduled!`, 'success');
+    }
+
     closeModal();
     await renderMaintenanceTable();
   });

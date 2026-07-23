@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (window.ApiClient) await window.ApiClient.checkHealth();
   await renderDashboard();
   initQuickAddModal();
+  document.getElementById('search-dash-plants')?.addEventListener('input', renderDashboard);
 });
 
 // Render Dashboard Data
@@ -26,14 +27,15 @@ async function renderDashboard() {
   const pendingCount = tasks.filter(t => (t.status || 'Pending') === 'Pending').length;
   document.getElementById('stat-pending-tasks').textContent = pendingCount;
 
-  // Render Recent Plants Table (Top 5)
+  // Render Recent Plants Table (Top 5 or filtered)
   const recentTable = document.getElementById('recent-plants-tbody');
-  const recentPlants = plants.slice(0, 5);
+  const dashQuery = (document.getElementById('search-dash-plants')?.value || '').toLowerCase().trim();
+  let filteredPlants = dashQuery ? plants.filter(p => (p.Name || p.name || '').toLowerCase().includes(dashQuery) || (p.Section_ID || p.section_id || '').toLowerCase().includes(dashQuery)) : plants.slice(0, 5);
 
-  if (recentPlants.length === 0) {
-    recentTable.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No plants added yet.</td></tr>`;
+  if (filteredPlants.length === 0) {
+    recentTable.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-muted); padding: 20px;">No matching plants.</td></tr>`;
   } else {
-    recentTable.innerHTML = recentPlants.map(plant => `
+    recentTable.innerHTML = filteredPlants.map(plant => `
       <tr>
         <td><strong>${escapeHtml(plant.Name || plant.name || 'Plant')}</strong></td>
         <td><span class="badge badge-completed">${escapeHtml(plant.category || 'Flower')}</span></td>

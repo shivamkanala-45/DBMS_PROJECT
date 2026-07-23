@@ -255,6 +255,17 @@ const GardenData = {
     this.setTable(keyName, list);
   },
 
+  updateRow(keyName, idField, value, updatedFields) {
+    const list = this.getTable(keyName);
+    const index = list.findIndex(item => String(item[idField] || item.id || '').toLowerCase() === String(value).toLowerCase());
+    if (index !== -1) {
+      list[index] = { ...list[index], ...updatedFields };
+      this.setTable(keyName, list);
+      return list[index];
+    }
+    return null;
+  },
+
   getSummary() {
     return {
       totalPlants: this.getTable('PLANT').length,

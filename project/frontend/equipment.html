@@ -73,6 +73,12 @@
         <!-- 4. Equipment -->
         <div class="tab-pane active" id="tab-equipment">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-equipment" placeholder="Search equipment by ID, Name, Vendor, Material...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -95,6 +101,12 @@
         <!-- 5. Fertilizer -->
         <div class="tab-pane" id="tab-fertilizer">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-fertilizer" placeholder="Search fertilizers by ID, Name, Nutrient...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -117,6 +129,12 @@
         <!-- 8. Vendor -->
         <div class="tab-pane" id="tab-vendor">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-vendor" placeholder="Search vendors by ID, Name, Contact, City...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -138,6 +156,12 @@
         <!-- 21. Uses -->
         <div class="tab-pane" id="tab-uses">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-uses" placeholder="Search equipment usage by Staff_ID, Equipment_ID...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -157,6 +181,12 @@
         <!-- 22. Equip_Maintain_by -->
         <div class="tab-pane" id="tab-equip-maintain">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-equip-maintain" placeholder="Search equipment maintenance by Schedule_ID, Equipment_ID...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -180,14 +210,15 @@
 
   </div>
 
-  <!-- Add Equipment Modal -->
+  <!-- Add/Edit Equipment Modal -->
   <div class="modal-backdrop" id="equipment-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Add Equipment</h3>
+        <h3 class="modal-title" id="equipment-modal-title">Add Equipment</h3>
         <button class="modal-close" id="eq-modal-close">&times;</button>
       </div>
       <form id="equipment-form">
+        <input type="hidden" id="eq-id">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="eq-name">Name</label>

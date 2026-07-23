@@ -73,6 +73,12 @@
         <!-- 1. Plant -->
         <div class="tab-pane active" id="tab-plant">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-plant" placeholder="Search plants by ID, Name, Section, Staff...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -95,6 +101,12 @@
         <!-- 2. Garden_Section -->
         <div class="tab-pane" id="tab-section">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-section" placeholder="Search sections by ID, Name, Security...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -116,6 +128,12 @@
         <!-- 6. Irrigation_System -->
         <div class="tab-pane" id="tab-irrigation-sys">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-irrigation-sys" placeholder="Search irrigation systems by ID, Type...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -135,6 +153,12 @@
         <!-- 7. Irrigation_Type -->
         <div class="tab-pane" id="tab-irrigation-type">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-irrigation-type" placeholder="Search irrigation types...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -153,6 +177,12 @@
         <!-- 15. Dead_Plant_Record -->
         <div class="tab-pane" id="tab-dead-plant">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-dead-plant" placeholder="Search dead plant records...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -176,14 +206,15 @@
 
   </div>
 
-  <!-- Add Plant Modal -->
+  <!-- Add/Edit Plant Modal -->
   <div class="modal-backdrop" id="plant-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Add New Plant</h3>
+        <h3 class="modal-title" id="plant-modal-title">Add New Plant</h3>
         <button class="modal-close" id="plant-modal-close">&times;</button>
       </div>
       <form id="plant-form">
+        <input type="hidden" id="form-p-id">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="form-p-name">Name</label>
@@ -208,7 +239,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" id="plant-modal-cancel">Cancel</button>
-          <button type="submit" class="btn btn-primary">Save Plant</button>
+          <button type="submit" class="btn btn-primary" id="plant-modal-submit">Save Plant</button>
         </div>
       </form>
     </div>

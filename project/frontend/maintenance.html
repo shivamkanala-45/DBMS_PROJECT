@@ -74,6 +74,12 @@
         <!-- 11. Maintenance_Schedule -->
         <div class="tab-pane active" id="tab-maintenance">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-maintenance" placeholder="Search tasks by ID, Task details, Status...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -93,6 +99,12 @@
         <!-- 10. Pest_Control -->
         <div class="tab-pane" id="tab-pest-control">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-pest-control" placeholder="Search pest control by ID, Vendor, Target...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -112,6 +124,12 @@
         <!-- 16. Compost_Bin -->
         <div class="tab-pane" id="tab-compost-bin">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-compost-bin" placeholder="Search compost bins by ID, Section, Type...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -132,6 +150,12 @@
         <!-- 17. Climate_Log -->
         <div class="tab-pane" id="tab-climate-log">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-climate-log" placeholder="Search climate logs by Date, Temperature, Rain...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -153,6 +177,12 @@
         <!-- 19. Applies_Fertilizer -->
         <div class="tab-pane" id="tab-applies-fert">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-applies-fert" placeholder="Search fertilizer applications by Plant, Staff, Fertilizer...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -174,6 +204,12 @@
         <!-- 20. Applies_pest -->
         <div class="tab-pane" id="tab-applies-pest">
           <div class="table-card">
+            <div class="table-toolbar">
+              <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="search-applies-pest" placeholder="Search pest applications by Plant, Staff, Pest ID...">
+              </div>
+            </div>
             <div class="table-responsive">
               <table class="data-table">
                 <thead>
@@ -198,14 +234,15 @@
 
   </div>
 
-  <!-- Add Task Modal -->
+  <!-- Add/Edit Task Modal -->
   <div class="modal-backdrop" id="task-modal">
     <div class="modal-box">
       <div class="modal-header">
-        <h3 class="modal-title">Schedule Task</h3>
+        <h3 class="modal-title" id="task-modal-title">Schedule Task</h3>
         <button class="modal-close" id="task-modal-close">&times;</button>
       </div>
       <form id="task-form">
+        <input type="hidden" id="t-id">
         <div class="modal-body">
           <div class="form-group">
             <label class="form-label" for="t-task">task</label>

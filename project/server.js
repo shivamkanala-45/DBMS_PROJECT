@@ -61,6 +61,21 @@ function createTableEndpoints(endpointName, tableName, primaryKeyCol) {
       res.json({ success: true, id });
     } catch (e) { res.status(500).json({ error: e.message }); }
   });
+
+  // PUT (Update)
+  app.put(`/api/${endpointName}/:id`, async (req, res) => {
+    try {
+      const id = req.params.id;
+      const updates = req.body;
+      const keys = Object.keys(updates).filter(k => k.toLowerCase() !== primaryKeyCol.toLowerCase());
+      if (keys.length === 0) return res.json({ success: true, id });
+      const setClause = keys.map((k, idx) => `"${k}" = $${idx + 2}`).join(', ');
+      const values = keys.map(k => updates[k]);
+      const sql = `UPDATE ${tableName} SET ${setClause} WHERE ${primaryKeyCol} = $1 RETURNING *`;
+      const rows = await queryDb(sql, [id, ...values]);
+      res.json(rows[0] || updates);
+    } catch (e) { res.status(500).json({ error: e.message }); }
+  });
 }
 
 // Register endpoints for all 23 database tables
