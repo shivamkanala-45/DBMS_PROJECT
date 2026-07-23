@@ -81,10 +81,17 @@ DBMS_PROJECT/
         │   └── style.css          # Core design system & theme variables
         └── js/
             ├── api-client.js      # Dual-mode API client (Fetch API + LocalStorage fallback)
-            ├── data.js            # Initial mock dataset (23 tables) & LocalStorage store
             ├── auth-guard.js      # Authentication session guard
-            ├── main.js            # Table pagination, sorting, search & modal handlers
-            └── *.js               # View-specific controllers (plants.js, staff.js, etc.)
+            ├── dashboard.js       # Dashboard view metrics controller
+            ├── data.js            # Initial mock dataset (23 tables) & LocalStorage store
+            ├── equipment.js       # Equipment view controller
+            ├── login.js           # Login form controller
+            ├── main.js            # DataTable engine, modals & theme switcher
+            ├── maintenance.js     # Operations & maintenance task controller
+            ├── plants.js          # Plant catalog view controller
+            ├── sections.js        # Garden sections view controller
+            ├── staff.js           # Staff directory view controller
+            └── visitors.js        # Visitor & access pass controller
 ```
 
 ---
