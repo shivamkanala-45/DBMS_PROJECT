@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard · Campus Gardening Management System</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Mobile Overlay -->
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-shell">
+    
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-seedling"></i></div>
+        <div>
+          <span class="brand-title">Campus Garden</span>
+          <span class="brand-subtitle">Management System</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Menu</div>
+        <a href="index.html" class="nav-item active"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+        <a href="plants.html" class="nav-item"><i class="fa-solid fa-leaf"></i><span>Cultivation</span></a>
+        <a href="staff.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Staff &amp; Security</span></a>
+        <a href="equipment.html" class="nav-item"><i class="fa-solid fa-toolbox"></i><span>Equipment &amp; Vendors</span></a>
+        <a href="maintenance.html" class="nav-item"><i class="fa-solid fa-list-check"></i><span>Operations &amp; Tasks</span></a>
+        <a href="visitors.html" class="nav-item"><i class="fa-solid fa-id-card"></i><span>Visitors &amp; Access</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="sidebar-avatar">G</div>
+          <div class="user-info">
+            <div class="user-name" id="topbar-user-name">Gardener</div>
+            <div class="user-role" id="topbar-user-role">Head Supervisor</div>
+          </div>
+          <button class="btn-logout" id="logout-btn" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Wrapper -->
+    <div class="main-wrapper">
+      
+      <!-- Topbar Header -->
+      <header class="topbar">
+        <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Dashboard Overview</h1>
+          <p>Welcome back! Real-time campus garden metrics &amp; database status.</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="db-status-badge" class="badge badge-pending"><i class="fa-solid fa-spinner fa-spin"></i> Checking DB...</span>
+          <button class="btn btn-primary" id="btn-quick-add"><i class="fa-solid fa-plus"></i> Add New Plant</button>
+        </div>
+      </header>
+
+      <!-- Content Body -->
+      <main class="content-body">
+        
+        <!-- Summary Stats Grid -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-green"><i class="fa-solid fa-leaf"></i></div>
+            <div class="stat-content">
+              <div class="stat-number" id="stat-total-plants">0</div>
+              <div class="stat-label">Total Plants</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-blue"><i class="fa-solid fa-map-location-dot"></i></div>
+            <div class="stat-content">
+              <div class="stat-number" id="stat-total-sections">0</div>
+              <div class="stat-label">Garden Sections</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-purple"><i class="fa-solid fa-users"></i></div>
+            <div class="stat-content">
+              <div class="stat-number" id="stat-total-staff">0</div>
+              <div class="stat-label">Gardening Staff</div>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon-wrapper stat-icon-amber"><i class="fa-solid fa-clock"></i></div>
+            <div class="stat-content">
+              <div class="stat-number" id="stat-pending-tasks">0</div>
+              <div class="stat-label">Pending Tasks</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Plants & Tasks Columns -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 24px;">
+          
+          <!-- Recent Plants -->
+          <div class="table-card">
+            <div class="section-header" style="padding: 18px 20px 0;">
+              <h2 class="section-title"><i class="fa-solid fa-seedling" style="color: var(--primary);"></i> Recent Plant Additions</h2>
+              <a href="plants.html" class="btn btn-secondary btn-sm">View All</a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Plant Name</th>
+                    <th>Category</th>
+                    <th>Section</th>
+                    <th>Health</th>
+                  </tr>
+                </thead>
+                <tbody id="recent-plants-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Pending Tasks -->
+          <div class="table-card">
+            <div class="section-header" style="padding: 18px 20px 0;">
+              <h2 class="section-title"><i class="fa-solid fa-calendar-check" style="color: var(--secondary);"></i> Urgent Maintenance Tasks</h2>
+              <a href="maintenance.html" class="btn btn-secondary btn-sm">Manage Tasks</a>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Task</th>
+                    <th>Section</th>
+                    <th>Priority</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody id="urgent-tasks-tbody">
+                  <!-- Populated by JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <!-- Quick Add Plant Modal -->
+  <div class="modal-backdrop" id="quick-add-modal">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3 class="modal-title">Quick Add New Plant</h3>
+        <button class="modal-close" id="modal-close-btn">&times;</button>
+      </div>
+      <form id="quick-add-form">
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="form-label" for="plant-name">Plant Name</label>
+            <input type="text" id="plant-name" class="form-control" placeholder="e.g. Lavender, Red Rose" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plant-category">Category</label>
+            <select id="plant-category" class="form-select" required>
+              <option value="Flower">Flower</option>
+              <option value="Herb">Herb</option>
+              <option value="Vegetable">Vegetable</option>
+              <option value="Tree">Tree</option>
+              <option value="Succulent">Succulent</option>
+              <option value="Bonsai">Bonsai</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plant-section">Garden Section</label>
+            <select id="plant-section" class="form-select" required>
+              <!-- Dynamic options populated by JS -->
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="plant-status">Health Status</label>
+            <select id="plant-status" class="form-select">
+              <option value="Healthy">Healthy</option>
+              <option value="Needs Care">Needs Care</option>
+              <option value="Critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Plant</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="js/data.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

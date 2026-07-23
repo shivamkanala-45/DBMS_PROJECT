@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visitors &amp; Access · Campus Gardening Management System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <div class="sidebar-overlay" id="sidebar-overlay"></div>
+
+  <div class="app-shell">
+    
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <div class="brand-icon"><i class="fa-solid fa-seedling"></i></div>
+        <div>
+          <span class="brand-title">Campus Garden</span>
+          <span class="brand-subtitle">Management System</span>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-label">Menu</div>
+        <a href="index.html" class="nav-item"><i class="fa-solid fa-gauge-high"></i><span>Dashboard</span></a>
+        <a href="plants.html" class="nav-item"><i class="fa-solid fa-leaf"></i><span>Cultivation</span></a>
+        <a href="staff.html" class="nav-item"><i class="fa-solid fa-users"></i><span>Staff &amp; Security</span></a>
+        <a href="equipment.html" class="nav-item"><i class="fa-solid fa-toolbox"></i><span>Equipment &amp; Vendors</span></a>
+        <a href="maintenance.html" class="nav-item"><i class="fa-solid fa-list-check"></i><span>Operations &amp; Tasks</span></a>
+        <a href="visitors.html" class="nav-item active"><i class="fa-solid fa-id-card"></i><span>Visitors &amp; Access</span></a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="user-card">
+          <div class="user-avatar" id="sidebar-avatar">G</div>
+          <div class="user-info">
+            <div class="user-name" id="topbar-user-name">Gardener</div>
+            <div class="user-role" id="topbar-user-role">Head Supervisor</div>
+          </div>
+          <button class="btn-logout" id="logout-btn" title="Log Out"><i class="fa-solid fa-right-from-bracket"></i></button>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      
+      <header class="topbar">
+        <button class="mobile-menu-btn" id="mobile-menu-btn"><i class="fa-solid fa-bars"></i></button>
+        <div class="page-title">
+          <h1>Visitors &amp; Access Control</h1>
+          <p>Explicit database views for Visitor, Visitor_Card, &amp; Visitor_Access.</p>
+        </div>
+        <div class="topbar-actions">
+          <span id="db-status-badge" class="badge badge-pending"><i class="fa-solid fa-spinner fa-spin"></i> Checking DB...</span>
+        </div>
+      </header>
+
+      <main class="content-body">
+        
+        <div class="tab-bar">
+          <div class="tab-item active" data-tab="tab-visitor"><i class="fa-solid fa-id-card"></i> 12. Visitor</div>
+          <div class="tab-item" data-tab="tab-visitor-card"><i class="fa-solid fa-credit-card"></i> 13. Visitor_Card</div>
+          <div class="tab-item" data-tab="tab-visitor-access"><i class="fa-solid fa-door-open"></i> 23. Visitor_Access</div>
+        </div>
+
+        <!-- 12. Visitor -->
+        <div class="tab-pane active" id="tab-visitor">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Visitor_ID</th>
+                    <th>Card_ID</th>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>profession</th>
+                    <th>from</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-visitor-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 13. Visitor_Card -->
+        <div class="tab-pane" id="tab-visitor-card">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Card_ID</th>
+                    <th>type</th>
+                    <th>number_of_people_allowed</th>
+                    <th>fees</th>
+                    <th>entry_time</th>
+                    <th>exit_time</th>
+                    <th>Security_ID</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-visitor-card-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 23. Visitor_Access -->
+        <div class="tab-pane" id="tab-visitor-access">
+          <div class="table-card">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Visitor_ID</th>
+                    <th>Section_ID</th>
+                    <th>purpose</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="tbl-visitor-access-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+
+  </div>
+
+  <script src="js/data.js"></script>
+  <script src="js/api-client.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/visitors.js"></script>
+</body>
+</html>
