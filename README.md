@@ -59,32 +59,33 @@ The system features **Dual-Mode Architecture**: seamlessly connecting to a live 
 ## 📂 Project Structure
 
 ```
-project/
-├── server.js                   # Express REST API backend server & PostgreSQL connection pool
-├── package.json                # Node.js dependencies (express, pg, cors, dotenv)
-├── API_DOCUMENTATION.md        # Full REST API endpoint reference
-├── README.md                   # System documentation & setup guide
-├── .env                        # Environment configuration (DB credentials & Port)
-├── database/
-│   └── garden.sql              # Normalized 3NF PostgreSQL relational schema & sample data
-└── frontend/                   # Client-side single/multi-page web application
-    ├── index.html              # Main dashboard view
-    ├── plants.html             # Plant management view
-    ├── sections.html           # Garden sections view
-    ├── staff.html              # Staff directory view
-    ├── equipment.html          # Equipment & inventory view
-    ├── maintenance.html        # Maintenance schedules view
-    ├── visitors.html           # Visitor & security management
-    ├── login.html              # Authentication & login screen
-    ├── css/                    # Modular design system & theme variables
-    │   ├── style.css           # Core layout, CSS variables & component styles
-    │   └── *.css               # Page-specific custom styles
-    └── js/                     # Application logic & client controllers
-        ├── api-client.js       # Dual-mode API client (Fetch + LocalStorage fallback)
-        ├── data.js             # Initial mock dataset & local table storage
-        ├── auth-guard.js       # Session control & page security guard
-        ├── main.js             # DataTable engine, modals, theme switcher & toast notifications
-        └── *.js                # Page-specific UI controller scripts
+.
+└── project/
+    ├── server.js                   # Express REST API backend server & PostgreSQL connection pool
+    ├── package.json                # Node.js dependencies (express, pg, cors, dotenv)
+    ├── API_DOCUMENTATION.md        # Full REST API endpoint reference
+    ├── README.md                   # System documentation & setup guide
+    ├── .env                        # Environment configuration (DB credentials & Port)
+    ├── database/
+    │   └── garden.sql              # Normalized 3NF PostgreSQL relational schema & sample data
+    └── frontend/                   # Client-side single/multi-page web application
+        ├── index.html              # Main dashboard view
+        ├── plants.html             # Plant management view
+        ├── sections.html           # Garden sections view
+        ├── staff.html              # Staff directory view
+        ├── equipment.html          # Equipment & inventory view
+        ├── maintenance.html        # Maintenance schedules view
+        ├── visitors.html           # Visitor & security management
+        ├── login.html              # Authentication & login screen
+        ├── css/                    # Modular design system & theme variables
+        │   ├── style.css           # Core layout, CSS variables & component styles
+        │   └── *.css               # Page-specific custom styles
+        └── js/                     # Application logic & client controllers
+            ├── api-client.js       # Dual-mode API client (Fetch + LocalStorage fallback)
+            ├── data.js             # Initial mock dataset & local table storage
+            ├── auth-guard.js       # Session control & page security guard
+            ├── main.js             # DataTable engine, modals, theme switcher & toast notifications
+            └── *.js                # Page-specific UI controller scripts
 ```
 
 ---
